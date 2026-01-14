@@ -101,6 +101,11 @@ header {
     align-items: end;
 }
 
+.title-section.single-column {
+    grid-template-columns: 1fr;
+    min-height: 149px;
+}
+
 .title-main h1 {
     font-family: "Playfair Display", serif;
     font-size: 3.5rem;
