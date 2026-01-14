@@ -33,7 +33,18 @@ document.querySelectorAll('.copy-btn').forEach(btn => {
             document.execCommand('copy');
             document.body.removeChild(textarea);
 
+            // 按钮状态
+            const originalText = textEl.textContent;
+            textEl.textContent = '已复制';
+            btn.classList.add('copied');
+
             showToast('链接已复制到剪贴板');
+
+            // 3秒后恢复按钮
+            setTimeout(() => {
+                textEl.textContent = originalText;
+                btn.classList.remove('copied');
+            }, 3000);
         }
     });
 });
