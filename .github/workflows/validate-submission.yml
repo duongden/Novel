@@ -1,0 +1,41 @@
+name: Validate Submission
+
+on:
+  pull_request:
+    paths:
+      - 'sources/legado/submissions/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Validate submission
+        id: validate
+        run: |
+          python scripts/validate.py sources/legado/submissions/*.json
+        continue-on-error: true
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const outcome = '${{ steps.validate.outcome }}';
+            const body = outcome === 'success'
+              ? '✅ 书源校验通过，等待合并。'
+              : '❌ 书源校验失败，请检查格式是否正确。';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });

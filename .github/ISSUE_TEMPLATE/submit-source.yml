@@ -1,0 +1,49 @@
+name: 投稿书源
+description: 提交你的书源到 Novel 书源库
+title: "[投稿] "
+labels: ["submission"]
+body:
+  - type: input
+    id: source_name
+    attributes:
+      label: 书源名称
+      placeholder: 例如：笔趣阁
+    validations:
+      required: true
+
+  - type: input
+    id: source_url
+    attributes:
+      label: 书源链接
+      description: 书源 JSON 文件的直链地址
+      placeholder: https://example.com/source.json
+    validations:
+      required: false
+
+  - type: textarea
+    id: source_content
+    attributes:
+      label: 书源内容
+      description: 如果没有链接，可以直接粘贴书源 JSON 内容
+      placeholder: 粘贴书源 JSON...
+    validations:
+      required: false
+
+  - type: input
+    id: contact
+    attributes:
+      label: 联系方式（可选）
+      description: 用于反馈审核结果
+      placeholder: GitHub 用户名或邮箱
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 确认
+      options:
+        - label: 书源为有效可访问的资源
+          required: true
+        - label: 书源为小说类型（bookSourceType = 0）
+          required: true

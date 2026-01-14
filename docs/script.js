@@ -2,23 +2,26 @@
 document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
         const url = btn.dataset.url;
+        const textEl = btn.querySelector('.copy-btn-text');
+        const iconEl = btn.querySelector('.copy-btn-icon');
 
         try {
             await navigator.clipboard.writeText(url);
 
             // 按钮状态
-            const originalText = btn.textContent;
-            btn.textContent = '已复制';
+            const originalText = textEl.textContent;
+            const originalIcon = iconEl.textContent;
+            textEl.textContent = '已复制';
             btn.classList.add('copied');
 
             // 显示 Toast
             showToast('链接已复制到剪贴板');
 
-            // 恢复按钮
+            // 3秒后恢复按钮
             setTimeout(() => {
-                btn.textContent = originalText;
+                textEl.textContent = originalText;
                 btn.classList.remove('copied');
-            }, 2000);
+            }, 3000);
         } catch (err) {
             // 降级方案
             const textarea = document.createElement('textarea');

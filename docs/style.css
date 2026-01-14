@@ -73,6 +73,7 @@ header {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--brown);
+    text-decoration: none;
 }
 
 .nav {
@@ -112,7 +113,10 @@ header {
 .title-main h1 .accent {
     color: var(--orange);
     display: inline-block;
-    margin-left: 0.5rem;
+    font-size: 0.64em;
+    position: relative;
+    top: -0.8em;
+    margin-left: 10px;
 }
 
 .title-main .subtitle {
@@ -145,7 +149,11 @@ header {
 .stat-icon {
     width: 20px;
     color: var(--brown-light);
-    font-size: 0.75rem;
+    font-size: 0.65rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .stat-value {
@@ -186,36 +194,37 @@ main {
 }
 
 .badge {
-    font-size: 0.6rem;
-    padding: 0.2rem 0.5rem;
+    font-size: 0.55rem;
+    padding: 0.1rem 0.4rem;
     border: 1px solid var(--border);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    background: var(--white);
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    color: var(--brown-light);
+    background: transparent;
 }
 
 .badge.android {
-    border-color: #3ddc84;
-    color: #2da866;
+    border-color: var(--border);
+    color: var(--brown-light);
 }
 
 .badge.ios {
-    border-color: #007aff;
-    color: #007aff;
+    border-color: var(--border);
+    color: var(--brown-light);
 }
 
 .source-badges {
     display: flex;
-    gap: 0.4rem;
+    gap: 0.3rem;
 }
 
 .source-item {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem 3rem;
+    gap: 1.5rem;
+    padding: 1.2rem 3rem;
     border-bottom: 1px solid var(--border);
-    transition: background 0.2s;
+    transition: background 0.2s ease;
 }
 
 .source-item:last-child {
@@ -223,7 +232,7 @@ main {
 }
 
 .source-item:hover {
-    background: rgba(61, 58, 53, 0.05);
+    background: rgba(61, 58, 53, 0.02);
 }
 
 .source-info {
@@ -233,9 +242,23 @@ main {
     flex: 1;
 }
 
+.source-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.source-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
 .source-name {
     font-weight: 500;
     font-size: 0.9rem;
+    color: var(--brown);
+    letter-spacing: 0.01em;
 }
 
 .source-count {
@@ -243,43 +266,69 @@ main {
     color: var(--brown-light);
 }
 
-/* Button */
+/* Button - 参考风格：描边文字 + 深色图标块 */
 .copy-btn {
-    background: var(--green-dark);
-    color: var(--white);
-    border: none;
-    padding: 0.6rem 1.2rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    display: flex;
+    align-items: stretch;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    padding: 0;
+    min-width: 90px;
+}
+
+.copy-btn-text {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--brown);
+    border: 1px solid var(--brown);
+    border-right: none;
+    background: transparent;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex: 1;
 }
 
-.copy-btn::after {
-    content: '+';
-    font-size: 1rem;
-    font-weight: 400;
-}
-
-.copy-btn:hover {
+.copy-btn-icon {
+    width: 32px;
     background: var(--brown);
+    color: var(--cream-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 300;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.copy-btn:hover .copy-btn-text {
+    background: rgba(61, 58, 53, 0.05);
+}
+
+.copy-btn:hover .copy-btn-icon {
+    background: var(--orange);
 }
 
 .copy-btn:active {
     transform: scale(0.98);
 }
 
-.copy-btn.copied {
+/* 复制成功状态 */
+.copy-btn.copied .copy-btn-text {
     background: var(--orange);
+    border-color: var(--orange);
+    color: var(--white);
+    border-right: 1px solid var(--orange);
 }
 
-.copy-btn.copied::after {
-    content: '✓';
+.copy-btn.copied .copy-btn-icon {
+    display: none;
 }
 
 /* Footer */
@@ -421,10 +470,295 @@ footer {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.75rem;
+        padding: 1rem 1.5rem;
+    }
+
+    .source-info::before {
+        display: none;
     }
 
     .copy-btn {
         width: 100%;
+    }
+
+    .copy-btn-text {
+        flex: 1;
         justify-content: center;
+    }
+}
+
+/* ==================== 投稿页面样式 ==================== */
+
+/* 投稿页面 Header */
+.submit-header {
+    padding: 3rem 3rem 2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+}
+
+.submit-title {
+    display: block;
+}
+
+.submit-title .title-main {
+    max-width: 100%;
+}
+
+.submit-title .subtitle {
+    max-width: 500px;
+}
+
+/* 投稿表单主体 */
+.submit-main {
+    padding: 2rem 3rem;
+}
+
+.submit-form {
+    background: var(--cream-light);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* 表单组 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-of-type {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--brown);
+    margin-bottom: 0.5rem;
+}
+
+.form-label .required {
+    color: var(--orange);
+}
+
+.form-label .optional {
+    color: var(--brown-light);
+    font-weight: 400;
+    font-size: 0.75rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    font-family: inherit;
+    color: var(--brown);
+    background: var(--white);
+    border: 1px solid var(--border);
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+    border-color: var(--brown);
+}
+
+.form-input::placeholder {
+    color: var(--brown-light);
+    opacity: 0.6;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--brown-light);
+    margin-top: 0.4rem;
+}
+
+/* 分隔线 */
+.form-divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: var(--brown-light);
+    font-size: 0.8rem;
+}
+
+.form-divider::before,
+.form-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.form-divider span {
+    padding: 0 1rem;
+}
+
+/* 文件上传 */
+.file-upload {
+    position: relative;
+}
+
+.file-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.file-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--white);
+    border: 1px dashed var(--border);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.file-label:hover {
+    border-color: var(--brown);
+}
+
+.file-text {
+    padding: 0.4rem 0.8rem;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--brown);
+}
+
+.file-name {
+    font-size: 0.8rem;
+    color: var(--brown-light);
+}
+
+.file-name.has-file {
+    color: var(--brown);
+    font-weight: 500;
+}
+
+/* 表单操作 */
+.form-actions {
+    margin-top: 2rem;
+}
+
+.submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.85rem 2rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    background: var(--brown);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.submit-btn:hover {
+    background: var(--orange);
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 提交结果 */
+.submit-result {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    font-size: 0.85rem;
+}
+
+.submit-result.success {
+    background: rgba(61, 74, 61, 0.1);
+    border: 1px solid var(--green-dark);
+    color: var(--green-dark);
+}
+
+.submit-result.success a {
+    color: var(--green-dark);
+    font-weight: 500;
+}
+
+.submit-result.error {
+    background: rgba(224, 123, 57, 0.1);
+    border: 1px solid var(--orange);
+    color: var(--orange);
+}
+
+/* 提交须知 */
+.submit-notice {
+    padding: 1.5rem;
+    background: var(--cream-light);
+    border: 1px solid var(--border);
+}
+
+.submit-notice h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--brown);
+    margin-bottom: 1rem;
+}
+
+.submit-notice ul {
+    list-style: none;
+}
+
+.submit-notice li {
+    position: relative;
+    padding-left: 1rem;
+    font-size: 0.8rem;
+    color: var(--brown-light);
+    line-height: 1.8;
+}
+
+.submit-notice li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--orange);
+}
+
+/* 投稿页面响应式 */
+@media (max-width: 768px) {
+    .submit-header {
+        padding: 2rem 1.5rem;
+    }
+
+    .submit-main {
+        padding: 1.5rem;
+    }
+
+    .submit-form {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .submit-form {
+        padding: 1rem;
+    }
+
+    .file-label {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 }

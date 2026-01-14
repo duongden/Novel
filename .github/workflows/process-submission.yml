@@ -1,0 +1,103 @@
+name: Process Submission
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  process:
+    if: contains(github.event.issue.labels.*.name, 'submission')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse issue and create PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+
+            // 解析 Issue 内容
+            const nameMatch = body.match(/### 书源名称\s*\n\s*(.+)/);
+            const urlMatch = body.match(/### 书源链接\s*\n\s*(.+)/);
+            const contentMatch = body.match(/### 书源内容\s*\n\s*([\s\S]*?)(?=\n### |$)/);
+
+            const name = nameMatch ? nameMatch[1].trim() : '';
+            const url = urlMatch ? urlMatch[1].trim() : '';
+            const content = contentMatch ? contentMatch[1].trim() : '';
+
+            if (!name) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: '❌ 缺少书源名称，请补充后重新提交。'
+              });
+              return;
+            }
+
+            if (!url && !content) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: '❌ 请提供书源链接或书源内容。'
+              });
+              return;
+            }
+
+            // 创建分支和文件
+            const timestamp = Date.now();
+            const branchName = `submit-${timestamp}`;
+            const fileName = `sources/legado/submissions/${timestamp}.json`;
+
+            const mainRef = await github.rest.git.getRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'heads/master'
+            });
+
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/heads/${branchName}`,
+              sha: mainRef.data.object.sha
+            });
+
+            const fileContent = JSON.stringify({
+              name,
+              url: url || null,
+              content: content || null,
+              issueNumber: issue.number,
+              submittedAt: new Date().toISOString()
+            }, null, 2);
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: fileName,
+              message: `feat: 投稿书源 - ${name}`,
+              content: Buffer.from(fileContent).toString('base64'),
+              branch: branchName
+            });
+
+            const pr = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `feat: 投稿书源 - ${name}`,
+              head: branchName,
+              base: 'master',
+              body: `关联 Issue: #${issue.number}\n\n- 名称：${name}\n- 来源：${url ? '链接' : '内容粘贴'}`
+            });
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: `✅ 已创建 PR: ${pr.data.html_url}\n\n书源将自动校验，通过后合并。`
+            });

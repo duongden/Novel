@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投稿书源 - Novel 小说书源维护</title>
+    <meta name="description" content="提交你的书源，帮助完善 Novel 书源库。提交的书源将经过自动校验，通过后纳入正式书源。">
+    <meta name="keywords" content="书源投稿,阅读,Legado,书源提交">
+    <meta name="author" content="tickmao">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://tickmao.github.io/Novel/submit.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="投稿书源 - Novel">
+    <meta property="og:description" content="提交你的书源，帮助完善 Novel 书源库。">
+    <meta property="og:url" content="https://tickmao.github.io/Novel/submit.html">
+    <meta property="og:site_name" content="Novel">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <a href="index.html" class="logo">Novel</a>
+                <nav class="nav">
+                    <a href="https://github.com/tickmao/Novel" target="_blank">GitHub</a>
+                    <a href="index.html">首页</a>
+                    <a href="https://github.com/tickmao/Novel/blob/master/CHANGELOG.md" target="_blank">更新</a>
+                </nav>
+            </div>
+            <div class="title-section" style="grid-template-columns: 1fr; min-height: 149px;">
+                <div class="title-main">
+                    <h1>投稿书源<span class="accent">✦</span></h1>
+                    <p class="subtitle">帮助我们完善书源库，提交的书源将经过自动校验，通过后纳入正式书源。</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="submit-main">
+            <div class="submit-form">
+                <p style="font-size: 0.9rem; color: var(--brown); margin-bottom: 1.5rem; line-height: 1.8;">
+                    点击下方按钮跳转到 GitHub 提交书源。需要 GitHub 账号登录。
+                </p>
+
+                <div class="form-actions">
+                    <a href="https://github.com/tickmao/Novel/issues/new?template=submit-source.yml" target="_blank" class="submit-btn">
+                        前往 GitHub 投稿
+                    </a>
+                </div>
+            </div>
+
+            <div class="submit-notice">
+                <h3>提交须知</h3>
+                <ul>
+                    <li>书源需为有效可访问的链接</li>
+                    <li>仅接受小说类书源（bookSourceType = 0）</li>
+                    <li>提交后将自动校验，通过后合并到正式书源</li>
+                    <li>我们保持约 1000 个高质量书源，低分书源可能被淘汰</li>
+                    <li>请勿重复提交已有书源</li>
+                </ul>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-left">
+                版权归原创作者所有 · <a href="https://github.com/tickmao/Novel/blob/master/CREDITS.md" target="_blank">致谢</a>
+            </div>
+            <div class="footer-right">
+                <a href="https://github.com/tickmao" target="_blank">GitHub</a>
+                <a href="https://blog.tickmao.com" target="_blank">Blog</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
