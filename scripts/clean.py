@@ -46,6 +46,19 @@ SPECIAL_SYMBOLS = re.compile(
 # 括号及内容（中文括号、英文括号、方括号、尖括号）
 BRACKET_PATTERN = re.compile(r'[（(【\[<][^）)】\]>]*[）)】\]>]')
 
+# 特殊括号内容（花括号、书名号变体）
+SPECIAL_BRACKETS = re.compile(r'〖[^〗]*〗|\{[^}]*\}')
+
+# 结尾序号（圆圈数字、阿拉伯数字含前导零 01-999）
+TRAILING_NUMBER = re.compile(r'[①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚㉛㉜㉝㉞㉟]+$|0*\d{1,3}$')
+
+# 描述性后缀词（需要移除）
+DESC_SUFFIXES = re.compile(
+    r'(自制|备用|自用|精|全|待正文|弃了|需要VIP|手机版|TV版|电脑版|第一版|音频|匿名'
+    r'|精品|优质|稳定|高速|免费|付费|正版|盗版|无广告|去广告|纯净|最新|更新'
+    r'|测试|旧版|新版|修复|优化|增强|精简|完整|破解|会员|VIP|vip)$'
+)
+
 # 名称后缀清洗模式（按顺序应用）
 NAME_SUFFIX_PATTERNS = [
     (r'^源社区出品-', ''),                     # 来源前缀（优先处理）
@@ -54,9 +67,11 @@ NAME_SUFFIX_PATTERNS = [
     (r'\s*#[^\s]+$', ''),                     # #作者名 署名
     (r'\s+[^\s]+$', ''),                      # 空格+内容（如 "爱书包 破冰"）
     (r'_[a-zA-Z0-9.-]+\.[a-z]{2,}$', ''),    # _域名 后缀
+    (r'_[^_]+_[^_]+$', ''),                   # _xxx_xxx 重复内容
     (r'-[\u4e00-\u9fa5]{2,4}$', ''),          # -作者名 后缀
     (r'[a-z]\d{1,3}$', ''),                   # 英文+数字后缀（如 b13）
     (r'(?<=[^\d])\d{1,3}$', ''),              # 纯数字后缀
+    (r'[._,]+$', ''),                          # 结尾符号
 ]
 
 # 分组排序顺序
@@ -152,10 +167,18 @@ def strip_decorations(text: str) -> str:
     text = EMOJI_PATTERN.sub("", text)
     text = SPECIAL_SYMBOLS.sub("", text)
     text = BRACKET_PATTERN.sub("", text)
+    text = SPECIAL_BRACKETS.sub("", text)
     # 名称后缀清洗
     for pattern, replacement in NAME_SUFFIX_PATTERNS:
         text = re.sub(pattern, replacement, text)
-    return text
+    # 移除描述性后缀和结尾数字（循环直到无变化）
+    prev = None
+    while prev != text:
+        prev = text
+        text = DESC_SUFFIXES.sub("", text)
+        text = TRAILING_NUMBER.sub("", text)
+        text = re.sub(r'[._\-]+$', '', text)
+    return text.strip()
 
 
 def clean_spaces(text: str) -> str:
