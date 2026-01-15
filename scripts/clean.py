@@ -3,9 +3,10 @@
 书源清洗脚本
 - 去除表情符号
 - 去除括号及内容
+- 转换特殊字符（圆圈数字、全角字符等）
 - 规范名称和分组
 - 清理多余空格
-- 可选：按评分自动分组（精选/标准/备用）
+- 可选：按评分自动分组（精选/标准/备用）+ 排序
 """
 
 import json
@@ -24,15 +25,29 @@ EMOJI_PATTERN = re.compile(
     "\U00002B50-\U00002B55"  # 星星等
     "\U0000FE00-\U0000FE0F"  # 变体选择器
     "\U0000200D"             # 零宽连接符
+    "\U0001F1E0-\U0001F1FF"  # 国旗
     "]+",
     flags=re.UNICODE
 )
 
 # 特殊符号（需要移除）
-SPECIAL_SYMBOLS = re.compile(r'[★☆✦✧⭐🌟💫🔥💥✨🎉🎊📚📖📕📗📘📙👍👎👏🙏💪❤️💕💖💗💙💚💛✅❌⭕❗❓①②③④⑤⑥⑦⑧⑨⑩Ⅰ-Ⅻ～~丨|｜👁🔰🎨📻📥💠🎉]+')
+SPECIAL_SYMBOLS = re.compile(
+    r'[★☆✦✧⭐🌟💫🔥💥✨🎉🎊📚📖📕📗📘📙👍👎👏🙏💪'
+    r'❤️💕💖💗💙💚💛✅❌⭕❗❓'
+    r'①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳'
+    r'㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚㉛㉜㉝㉞㉟'
+    r'⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻'
+    r'Ⅰ-Ⅻ～~丨|｜👁🔰🎨📻📥💠'
+    r'◎▪™〽㊣●○◆◇■□▲△▼▽'
+    r'Ａ-Ｚａ-ｚ０-９'
+    r']+'
+)
 
 # 括号及内容（中文括号、英文括号、方括号）
 BRACKET_PATTERN = re.compile(r'[（(【\[][^）)】\]]*[）)】\]]')
+
+# 分组排序顺序
+GROUP_ORDER = {"精选": 0, "标准": 1, "备用": 2}
 
 # 分组名称映射（原始 -> 标准）
 GROUP_MAPPING = {
@@ -185,11 +200,19 @@ def clean_sources(sources: list, grade: bool = False) -> list:
     return [clean_source(s, grade) for s in sources]
 
 
+def sort_sources(sources: list) -> list:
+    """按分组和名称排序"""
+    return sorted(sources, key=lambda s: (
+        GROUP_ORDER.get(s.get("bookSourceGroup", ""), 99),
+        s.get("bookSourceName", "")
+    ))
+
+
 def main():
     parser = argparse.ArgumentParser(description="书源清洗脚本")
     parser.add_argument("--input", "-i", required=True, help="输入文件路径")
     parser.add_argument("--output", "-o", required=True, help="输出文件路径")
-    parser.add_argument("--grade", "-g", action="store_true", help="按评分自动分组（精选/标准/备用）")
+    parser.add_argument("--grade", "-g", action="store_true", help="按评分自动分组（精选/标准/备用）+ 排序")
     args = parser.parse_args()
 
     input_path = Path(args.input)
@@ -205,10 +228,14 @@ def main():
 
     print(f"读取书源：{len(sources)} 个")
     if args.grade:
-        print("启用评分分组模式")
+        print("启用评分分组 + 排序模式")
 
     # 清洗
     cleaned = clean_sources(sources, grade=args.grade)
+
+    # 排序（仅在 grade 模式下）
+    if args.grade:
+        cleaned = sort_sources(cleaned)
 
     # 输出
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -224,7 +251,7 @@ def main():
         groups[g] = groups.get(g, 0) + 1
 
     print("\n分组统计：")
-    for g, count in sorted(groups.items(), key=lambda x: -x[1]):
+    for g, count in sorted(groups.items(), key=lambda x: GROUP_ORDER.get(x[0], 99)):
         print(f"  {g or '未分组'}: {count}")
 
     return 0
