@@ -43,8 +43,21 @@ SPECIAL_SYMBOLS = re.compile(
     r']+'
 )
 
-# 括号及内容（中文括号、英文括号、方括号）
-BRACKET_PATTERN = re.compile(r'[（(【\[][^）)】\]]*[）)】\]]')
+# 括号及内容（中文括号、英文括号、方括号、尖括号）
+BRACKET_PATTERN = re.compile(r'[（(【\[<][^）)】\]>]*[）)】\]>]')
+
+# 名称后缀清洗模式（按顺序应用）
+NAME_SUFFIX_PATTERNS = [
+    (r'^源社区出品-', ''),                     # 来源前缀（优先处理）
+    (r'^[+\-#.·]\s*', ''),                    # 开头特殊符号
+    (r'#\d+$', ''),                           # #数字 版本号
+    (r'\s*#[^\s]+$', ''),                     # #作者名 署名
+    (r'\s+[^\s]+$', ''),                      # 空格+内容（如 "爱书包 破冰"）
+    (r'_[a-zA-Z0-9.-]+\.[a-z]{2,}$', ''),    # _域名 后缀
+    (r'-[\u4e00-\u9fa5]{2,4}$', ''),          # -作者名 后缀
+    (r'[a-z]\d{1,3}$', ''),                   # 英文+数字后缀（如 b13）
+    (r'(?<=[^\d])\d{1,3}$', ''),              # 纯数字后缀
+]
 
 # 分组排序顺序
 GROUP_ORDER = {"精选": 0, "标准": 1, "备用": 2}
@@ -133,12 +146,15 @@ def get_grade_group(score: int) -> str:
 
 
 def strip_decorations(text: str) -> str:
-    """移除装饰性内容（表情、特殊符号、括号及内容）"""
+    """移除装饰性内容（表情、特殊符号、括号、后缀等）"""
     if not text:
         return ""
     text = EMOJI_PATTERN.sub("", text)
     text = SPECIAL_SYMBOLS.sub("", text)
     text = BRACKET_PATTERN.sub("", text)
+    # 名称后缀清洗
+    for pattern, replacement in NAME_SUFFIX_PATTERNS:
+        text = re.sub(pattern, replacement, text)
     return text
 
 
