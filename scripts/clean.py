@@ -59,6 +59,9 @@ DESC_SUFFIXES = re.compile(
     r'|测试|旧版|新版|修复|优化|增强|精简|完整|破解|会员|VIP|vip)$'
 )
 
+# 结尾符号（清理残留）
+TRAILING_SYMBOLS = re.compile(r'[._\-]+$')
+
 # 名称后缀清洗模式（按顺序应用）
 NAME_SUFFIX_PATTERNS = [
     (r'^源社区出品-', ''),                     # 来源前缀（优先处理）
@@ -177,7 +180,7 @@ def strip_decorations(text: str) -> str:
         prev = text
         text = DESC_SUFFIXES.sub("", text)
         text = TRAILING_NUMBER.sub("", text)
-        text = re.sub(r'[._\-]+$', '', text)
+        text = TRAILING_SYMBOLS.sub("", text)
     return text.strip()
 
 
